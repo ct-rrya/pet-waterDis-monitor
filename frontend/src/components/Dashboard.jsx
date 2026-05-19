@@ -1,4 +1,5 @@
-import { Droplets, ArrowRight, Moon, Sun } from 'lucide-react';
+import { useState } from 'react';
+import { Droplets, ArrowRight, Moon, Sun, Users } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import WaterLevelCard from './WaterLevelCard';
 import BowlLevelCard from './BowlLevelCard';
@@ -6,10 +7,12 @@ import PetDetectionCard from './PetDetectionCard';
 import ControlPanel from './ControlPanel';
 import StatusCard from './StatusCard';
 import WaterHistoryChart from './WaterHistoryChart';
+import AboutModal from './AboutModal';
 
 export default function Dashboard({ deviceData, history, onStartDispensing, onStopDispensing }) {
   const { tankLevel, bowlLevel, petDetected, isOnline, lastUpdate, dispensing } = deviceData;
   const { isDark, toggleTheme } = useTheme();
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl relative z-10">
@@ -25,6 +28,15 @@ export default function Dashboard({ deviceData, history, onStartDispensing, onSt
           ) : (
             <Moon className="w-6 h-6 text-purple-600 group-hover:-rotate-12 transition-transform duration-300" />
           )}
+        </button>
+
+        {/* About Us Button */}
+        <button
+          onClick={() => setIsAboutOpen(true)}
+          className="absolute top-0 right-16 w-12 h-12 rounded-2xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-md shadow-lg hover:shadow-xl flex items-center justify-center transition-all hover:scale-110 group"
+          aria-label="About Us"
+        >
+          <Users className="w-6 h-6 text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform duration-300" />
         </button>
 
         <div className="inline-block mb-4 animate-float">
@@ -74,6 +86,9 @@ export default function Dashboard({ deviceData, history, onStartDispensing, onSt
         </div>
         <WaterHistoryChart data={history} />
       </div>
+
+      {/* About Modal */}
+      <AboutModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
     </div>
   );
 }

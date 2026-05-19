@@ -7,3 +7,12 @@ build/
 frontend/node_modules/
 frontend/dist/
 backend/node_modules/
+
+# Firebase
+.firebase/
+.firebaserc
+firebase-debug.log
+firebase-debug.*.log
+
+# Firebase config with credentials (uncomment after adding real keys)
+# frontend/src/firebase.js

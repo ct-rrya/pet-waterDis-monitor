@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
-import { io } from 'socket.io-client';
+import { ref, onValue, set, push } from 'firebase/database';
+import { database } from './firebase';
 import Dashboard from './components/Dashboard';
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3001';
-
 function App() {
-  const [socket, setSocket] = useState(null);
   const [deviceData, setDeviceData] = useState({
     tankLevel: 0,
     bowlLevel: 0,
@@ -17,26 +15,46 @@ function App() {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
-    const newSocket = io(SOCKET_URL);
-    setSocket(newSocket);
-
-    newSocket.on('deviceUpdate', (data) => {
-      setDeviceData(data);
+    // Listen to device data changes
+    const deviceRef = ref(database, 'device');
+    const unsubscribeDevice = onValue(deviceRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setDeviceData({
+          tankLevel: data.tankLevel || 0,
+          bowlLevel: data.bowlLevel || 0,
+          petDetected: data.petDetected || false,
+          isOnline: data.isOnline || false,
+          lastUpdate: data.lastUpdate || null,
+          dispensing: data.dispensing || false
+        });
+      }
     });
 
-    newSocket.on('historyUpdate', (data) => {
-      setHistory(data);
+    // Listen to history changes
+    const historyRef = ref(database, 'history');
+    const unsubscribeHistory = onValue(historyRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const historyArray = Object.values(data);
+        setHistory(historyArray);
+      }
     });
 
-    return () => newSocket.close();
+    return () => {
+      unsubscribeDevice();
+      unsubscribeHistory();
+    };
   }, []);
 
   const handleStartDispensing = () => {
-    socket?.emit('startDispensing');
+    const controlRef = ref(database, 'control/command');
+    set(controlRef, 'start');
   };
 
   const handleStopDispensing = () => {
-    socket?.emit('stopDispensing');
+    const controlRef = ref(database, 'control/command');
+    set(controlRef, 'stop');
   };
 
   return (
