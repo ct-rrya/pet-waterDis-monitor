@@ -41,7 +41,7 @@ A full-stack IoT solution for monitoring and controlling your pet's water supply
 - Node.js (v18+)
 - MQTT Broker (Mosquitto recommended)
 - ESP32 board
-- Arduino IDE or PlatformIO
+- Arduino IDE
 
 ### Installation
 
