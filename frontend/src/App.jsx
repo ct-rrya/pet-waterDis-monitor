@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { ref, onValue, set } from 'firebase/database';
 import { database } from './firebase';
-import { generateMockDeviceData, generateMockHistory, startMockDataSimulation } from './mockData';
 import Dashboard from './components/Dashboard';
 
 function App() {
-  const [useMockData, setUseMockData] = useState(false);
   const [deviceData, setDeviceData] = useState({
     tankLevel: 0,
     bowlLevel: 0,
@@ -16,97 +14,51 @@ function App() {
   });
   const [history, setHistory] = useState([]);
 
-  // Mock Data Mode
   useEffect(() => {
-    if (useMockData) {
-      // Set initial mock data
-      setDeviceData(generateMockDeviceData());
-      setHistory(generateMockHistory());
+    // Listen to device data changes
+    const deviceRef = ref(database, 'device');
+    const unsubscribeDevice = onValue(deviceRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setDeviceData({
+          tankLevel: data.tankLevel || 0,
+          bowlLevel: data.bowlLevel || 0,
+          petDetected: data.petDetected || false,
+          isOnline: data.isOnline || false,
+          lastUpdate: data.lastUpdate || null,
+          dispensing: data.dispensing || false
+        });
+      }
+    });
 
-      // Start simulation
-      const stopSimulation = startMockDataSimulation((data) => {
-        setDeviceData(data);
-      });
+    // Listen to history changes
+    const historyRef = ref(database, 'history');
+    const unsubscribeHistory = onValue(historyRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const historyArray = Object.values(data);
+        setHistory(historyArray);
+      }
+    });
 
-      return stopSimulation;
-    }
-  }, [useMockData]);
-
-  // Firebase Mode
-  useEffect(() => {
-    if (!useMockData) {
-      // Listen to device data changes
-      const deviceRef = ref(database, 'device');
-      const unsubscribeDevice = onValue(deviceRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setDeviceData({
-            tankLevel: data.tankLevel || 0,
-            bowlLevel: data.bowlLevel || 0,
-            petDetected: data.petDetected || false,
-            isOnline: data.isOnline || false,
-            lastUpdate: data.lastUpdate || null,
-            dispensing: data.dispensing || false
-          });
-        }
-      });
-
-      // Listen to history changes
-      const historyRef = ref(database, 'history');
-      const unsubscribeHistory = onValue(historyRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          const historyArray = Object.values(data);
-          setHistory(historyArray);
-        }
-      });
-
-      return () => {
-        unsubscribeDevice();
-        unsubscribeHistory();
-      };
-    }
-  }, [useMockData]);
+    return () => {
+      unsubscribeDevice();
+      unsubscribeHistory();
+    };
+  }, []);
 
   const handleStartDispensing = () => {
-    if (useMockData) {
-      // Mock mode: just update local state
-      setDeviceData(prev => ({ ...prev, dispensing: true }));
-      setTimeout(() => {
-        setDeviceData(prev => ({ ...prev, dispensing: false }));
-      }, 5000);
-    } else {
-      // Firebase mode
-      const controlRef = ref(database, 'control/command');
-      set(controlRef, 'start');
-    }
+    const controlRef = ref(database, 'control/command');
+    set(controlRef, 'start');
   };
 
   const handleStopDispensing = () => {
-    if (useMockData) {
-      setDeviceData(prev => ({ ...prev, dispensing: false }));
-    } else {
-      const controlRef = ref(database, 'control/command');
-      set(controlRef, 'stop');
-    }
+    const controlRef = ref(database, 'control/command');
+    set(controlRef, 'stop');
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-200 via-pink-100 to-blue-200 dark:from-gray-900 dark:via-purple-900 dark:to-gray-900 relative overflow-hidden transition-colors duration-500">
-      {/* Mock Data Toggle */}
-      <div className="fixed top-4 left-4 z-50">
-        <button
-          onClick={() => setUseMockData(!useMockData)}
-          className={`px-4 py-2 rounded-2xl font-semibold text-sm shadow-lg backdrop-blur-md transition-all hover:scale-105 ${
-            useMockData
-              ? 'bg-green-500 text-white'
-              : 'bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200'
-          }`}
-        >
-          {useMockData ? '🎭 Mock Data ON' : '🔌 Live Data'}
-        </button>
-      </div>
-
       {/* Pet Pattern Background */}
       <div className="absolute inset-0 opacity-[0.08] dark:opacity-[0.05] pointer-events-none z-0">
         <div 

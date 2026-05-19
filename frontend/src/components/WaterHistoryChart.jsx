@@ -90,27 +90,28 @@ export default function WaterHistoryChart({ data }) {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl p-4">
-          <div className="text-xs text-blue-600 dark:text-blue-400 font-medium mb-1">Data Points</div>
-          <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{chartData.length}</div>
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6">
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl p-2 sm:p-4">
+          <div className="text-[10px] sm:text-xs text-blue-600 dark:text-blue-400 font-medium mb-1">Data Points</div>
+          <div className="text-lg sm:text-2xl font-bold text-blue-700 dark:text-blue-300 truncate">{chartData.length}</div>
         </div>
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 rounded-2xl p-4">
-          <div className="text-xs text-purple-600 dark:text-purple-400 font-medium mb-1">Average Level</div>
-          <div className="text-2xl font-bold text-purple-700 dark:text-purple-300">{getAverageLevel()}%</div>
+        <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 rounded-2xl p-2 sm:p-4">
+          <div className="text-[10px] sm:text-xs text-purple-600 dark:text-purple-400 font-medium mb-1">Average Level</div>
+          <div className="text-lg sm:text-2xl font-bold text-purple-700 dark:text-purple-300 truncate">{getAverageLevel()}%</div>
         </div>
-        <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/30 dark:to-pink-800/30 rounded-2xl p-4">
-          <div className="text-xs text-pink-600 dark:text-pink-400 font-medium mb-1">Trend</div>
-          <div className={`text-2xl font-bold flex items-center gap-1 ${
+        <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/30 dark:to-pink-800/30 rounded-2xl p-2 sm:p-4">
+          <div className="text-[10px] sm:text-xs text-pink-600 dark:text-pink-400 font-medium mb-1">Trend</div>
+          <div className={`text-lg sm:text-2xl font-bold flex items-center gap-1 truncate ${
             getTrend() > 0 ? 'text-green-600 dark:text-green-400' : getTrend() < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400'
           }`}>
-            {getTrend() > 0 ? '↑' : getTrend() < 0 ? '↓' : '→'} {Math.abs(getTrend())}%
+            <span className="text-base sm:text-2xl">{getTrend() > 0 ? '↑' : getTrend() < 0 ? '↓' : '→'}</span>
+            <span className="truncate">{Math.abs(Math.round(getTrend()))}%</span>
           </div>
         </div>
       </div>
 
       {/* Chart */}
-      <div className="w-full h-80 bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-2xl p-4">
+      <div className="w-full h-64 sm:h-80 bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-2xl p-2 sm:p-4">
         {chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData}>
