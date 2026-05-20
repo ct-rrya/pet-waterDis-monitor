@@ -66,7 +66,7 @@ export default function AboutModal({ isOpen, onClose }) {
               <div className="flex items-start gap-3">
                 <Code className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5" />
                 <div>
-                  <span className="font-semibold">Course:</span> BSIT 3A
+                  <span className="font-semibold">Program:</span> BSIT 3A
                 </div>
               </div>
               <div className="flex items-start gap-3">

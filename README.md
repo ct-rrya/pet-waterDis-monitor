@@ -17,129 +17,241 @@ A full-stack IoT solution for monitoring and controlling your pet's water supply
 ## 🏗️ Tech Stack
 
 ### Frontend
-- React + TypeScript
+- React + Vite
 - Tailwind CSS
-- Vite
+- Firebase Realtime Database
 - PWA (Service Worker + Manifest)
-- Socket.IO Client
 - Recharts
 
-### Backend
-- Node.js + Express
-- Socket.IO
-- MQTT Bridge
+### Backend/Integration
+- Firebase Realtime Database (Cloud)
+- C# .NET 6.0 (Desktop Integration)
+- FirebaseDatabase.net
 
-### IoT
+### IoT Hardware
 - ESP32 (Arduino/C++)
 - Ultrasonic sensors (water level)
-- PIR sensor (pet detection)
+- IR sensor (pet detection)
 - Water pump control
+- Firebase ESP Client
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js (v18+)
-- MQTT Broker (Mosquitto recommended)
+- Node.js (v18+) - for frontend development
+- .NET 6.0 SDK - for C# integration (optional)
+- Firebase account (free tier)
 - ESP32 board
 - Arduino IDE
 
 ### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone <repo-url>
-   cd smart-pet-water-dispenser
-   ```
-
-2. **Install root dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Install frontend dependencies**
-   ```bash
-   cd frontend
-   npm install
-   cd ..
-   ```
-
-4. **Configure environment**
-   ```bash
-   cd backend
-   cp .env.example .env
-   # Edit .env with your MQTT broker details
-   ```
-
-5. **Start MQTT Broker** (if using Mosquitto)
-   ```bash
-   mosquitto -v
-   ```
-
-6. **Run the application**
-   ```bash
-   npm run dev
-   ```
-
-   This will start:
-   - Backend server on `http://localhost:3001`
-   - Frontend dev server on `http://localhost:5173`
-
-### ESP32 Setup
-
-1. Open `esp32/esp32_mqtt.ino` in Arduino IDE
-2. Update WiFi credentials and MQTT broker IP
-3. Connect your sensors:
-   - Tank ultrasonic: TRIG=5, ECHO=18
-   - Bowl ultrasonic: TRIG=19, ECHO=21
-   - PIR sensor: PIN=22
-   - Water pump: PIN=23
-4. Upload to ESP32
-
-## 📦 Production Build
+#### 1. Frontend Setup
 
 ```bash
-npm run build
-npm start
+cd frontend
+npm install
 ```
+
+#### 2. Firebase Configuration
+
+1. Create a Firebase project at https://console.firebase.google.com
+2. Enable Realtime Database
+3. Copy your Firebase config to `frontend/src/firebase.js`
+4. Set database rules to public (for development):
+   ```json
+   {
+     "rules": {
+       ".read": true,
+       ".write": true
+     }
+   }
+   ```
+
+#### 3. Run Frontend
+
+```bash
+npm run dev
+```
+
+Frontend will start on `http://localhost:5173`
+
+**Or visit the live deployment:** https://water-dispenser-7e6e9.web.app
+
+#### 4. ESP32 Setup
+
+1. Open `esp32/esp32_firebase.ino` in Arduino IDE
+2. Install required libraries:
+   - Firebase ESP Client
+   - WiFi
+3. Update credentials:
+   ```cpp
+   #define WIFI_SSID "your_wifi_name"
+   #define WIFI_PASSWORD "your_wifi_password"
+   #define API_KEY "your_firebase_api_key"
+   #define DATABASE_URL "your_firebase_database_url"
+   ```
+4. Connect your sensors:
+   - Tank ultrasonic: TRIG=5, ECHO=18
+   - Bowl ultrasonic: TRIG=19, ECHO=21
+   - IR sensor: PIN=22
+   - Water pump: PIN=23
+5. Upload to ESP32
+
+#### 5. C# Integration (Optional)
+
+For desktop monitoring and control:
+
+```bash
+cd csharp-integration
+dotnet restore
+dotnet run
+```
+
+See `CSHARP_INTEGRATION_GUIDE.md` for detailed instructions.
+
+## 📦 Production Deployment
+
+### Frontend (Firebase Hosting)
+
+```bash
+cd frontend
+npm run build
+firebase deploy
+```
+
+Live URL: https://water-dispenser-7e6e9.web.app
+
+### C# Desktop Application
+
+```bash
+cd csharp-integration
+dotnet publish -c Release -r win-x64 --self-contained
+```
+
+Executable will be in `bin/Release/net6.0/win-x64/publish/`
 
 ## 🔧 Configuration
 
-### Backend (.env)
-```
-PORT=3001
-CLIENT_URL=http://localhost:5173
-MQTT_BROKER=mqtt://localhost:1883
+### Firebase (firebase.js)
+```javascript
+const firebaseConfig = {
+  apiKey: "your_api_key",
+  authDomain: "your_project.firebaseapp.com",
+  databaseURL: "https://your_project.firebaseio.com",
+  projectId: "your_project",
+  storageBucket: "your_project.appspot.com",
+  messagingSenderId: "your_sender_id",
+  appId: "your_app_id"
+};
 ```
 
-### Frontend (.env)
+### ESP32 (esp32_firebase.ino)
+```cpp
+#define WIFI_SSID "your_wifi_name"
+#define WIFI_PASSWORD "your_wifi_password"
+#define API_KEY "your_firebase_api_key"
+#define DATABASE_URL "your_firebase_database_url"
 ```
-VITE_SOCKET_URL=http://localhost:3001
+
+### C# Integration (FirebaseIntegration.cs)
+```csharp
+private const string FIREBASE_URL = "https://your_project.firebaseio.com/";
 ```
 
 ## 📱 PWA Installation
 
 The dashboard can be installed as a Progressive Web App:
-1. Open the app in a browser
-2. Click the install icon in the address bar
-3. Follow the prompts to install
+
+### Android
+1. Open https://water-dispenser-7e6e9.web.app in Chrome
+2. Tap the menu (⋮) → "Add to Home screen"
+3. Tap "Add" to install
+
+### iOS
+1. Open https://water-dispenser-7e6e9.web.app in Safari
+2. Tap the Share button (□↑)
+3. Scroll down and tap "Add to Home Screen"
+4. Tap "Add"
+
+See `frontend/PWA_SETUP.md` for detailed instructions.
 
 ## 🛠️ Development
 
-- `npm run dev` - Start both frontend and backend in development mode
-- `npm run server` - Start only the backend server
-- `npm run client` - Start only the frontend dev server
+### Frontend Development
+```bash
+cd frontend
+npm run dev  # Start Vite dev server
+```
 
-## 📊 MQTT Topics
+### C# Integration Development
+```bash
+cd csharp-integration
+dotnet run   # Run console application
+```
 
-- `dispenser/tank` - Tank water level (0-100%)
-- `dispenser/bowl` - Bowl water level (0-100%)
-- `dispenser/pet` - Pet detection (0 or 1)
-- `dispenser/status` - Device status (online/offline)
-- `dispenser/control` - Control commands (start/stop)
+### Testing Without Hardware
+Use the C# application to simulate sensor data:
+1. Run `dotnet run` in csharp-integration folder
+2. Select option 5 (Simulate hardware data)
+3. Enter test values
+4. View updates in web app in real-time
+
+## 📊 Firebase Database Structure
+
+```json
+{
+  "device": {
+    "tankLevel": 75,          // Main tank water level (0-100%)
+    "bowlLevel": 50,          // Bowl water level (0-100%)
+    "petDetected": true,      // Pet presence detection
+    "isOnline": true,         // Device connectivity status
+    "lastUpdate": "1234567890", // Unix timestamp (ms)
+    "dispensing": false       // Pump status
+  },
+  "control": {
+    "command": "start"        // Control commands: "start" | "stop" | ""
+  },
+  "history": {
+    "1234567890": {
+      "timestamp": "1234567890",
+      "tankLevel": 75
+    }
+  }
+}
+```
+
+### Data Flow
+```
+ESP32 → Firebase ← Web App
+              ↕
+         C# Desktop App
+```
+
+All components communicate through Firebase Realtime Database in real-time.
 
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📚 Documentation
+
+- **[CODE_DOCUMENTATION.md](CODE_DOCUMENTATION.md)** - Core code explanations
+- **[CSHARP_INTEGRATION_GUIDE.md](CSHARP_INTEGRATION_GUIDE.md)** - C# integration guide
+- **[SYSTEM_FLOWCHART.md](SYSTEM_FLOWCHART.md)** - System architecture
+- **[frontend/PWA_SETUP.md](frontend/PWA_SETUP.md)** - PWA installation guide
+- **[csharp-integration/README.md](csharp-integration/README.md)** - C# quick start
+
+## 👥 Team
+
+**GROUP 1 - BSIT 3A (Academic Year 2025-2026)**
+
+- **Lord Jason Riveral** - Main Hardware Developer
+- **Jerome Magdadaro** - Assistant Hardware Developer  
+- **Merry Apple Edaño** - Software Developer
+- **Vence Peter Doble** - Documentation and Hardware Assistant
+
+**Subject:** Application of Internet of Things (AP 5)
 
 ## 📄 License
 

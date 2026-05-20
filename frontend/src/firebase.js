@@ -4,13 +4,13 @@ import { getDatabase } from 'firebase/database';
 // TODO: Replace with your Firebase project configuration
 // Get this from Firebase Console > Project Settings > General > Your apps
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDq55gPMFoaidfde0AM9oAstsCkJdRrb4I",
+  authDomain: "water-dispenser-7e6e9.firebaseapp.com",
+  databaseURL: "https://water-dispenser-7e6e9-default-rtdb.firebaseio.com",
+  projectId: "water-dispenser-7e6e9",
+  storageBucket: "water-dispenser-7e6e9.firebasestorage.app",
+  messagingSenderId: "137922883737",
+  appId: "1:137922883737:web:15887c3511b97b9aa04808"
 };
 
 // Initialize Firebase

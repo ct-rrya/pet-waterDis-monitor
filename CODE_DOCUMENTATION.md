@@ -163,7 +163,7 @@ const toggleTheme = () => setIsDark(!isDark);
 
 **Backend:** Express.js, Socket.IO, MQTT.js  
 **Frontend:** React, Vite, Socket.IO Client, Tailwind CSS  
-**Hardware:** ESP32, Ultrasonic Sensors, IR Sensor, Water Pump
+**Hardware:** ESP32, Ultrasonic Sensors,  Water Pump
 
 ---
 
